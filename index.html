@@ -1,0 +1,219 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>TOEFL Practice Portal</title>
+    <script src="https://cdn.jsdelivr.net/npm/@tailwindcss/browser@4"></script>
+    <style>
+        .correct { border-color: #22c55e; background-color: #f0fdf4; }
+        .incorrect { border-color: #ef4444; background-color: #fef2f2; }
+    </style>
+</head>
+<body class="bg-gray-50 font-sans text-gray-800 antialiased">
+
+    <div class="max-w-4xl mx-auto px-4 py-8">
+        <header class="text-center mb-10">
+            <h1 class="text-3xl font-extrabold text-blue-900 sm:text-4xl">TOEFL Prep: Listening & Prep Quiz</h1>
+            <p class="mt-2 text-lg text-gray-600">Listen to the lecture carefully, then test your knowledge below.</p>
+        </header>
+
+        <section class="bg-white p-6 rounded-2xl shadow-sm border border-gray-200 mb-8">
+            <h2 class="text-xl font-bold text-gray-900 mb-4 flex items-center gap-2">
+                <span class="p-2 bg-blue-100 text-blue-700 rounded-lg">🎧</span> Step 1: Lecture Listening Practice
+            </h2>
+            <p class="text-gray-600 mb-4">Click play to listen to the TOEFL strategies lecture. Take notes while you listen!</p>
+            <div class="bg-gray-100 p-4 rounded-xl flex justify-center">
+                <audio controls class="w-full max-w-xl">
+                    <source src="1.mp3" type="audio/mpeg">
+                    Your browser does not support the audio element.
+                </audio>
+            </div>
+        </section>
+
+        <section class="bg-white p-6 rounded-2xl shadow-sm border border-gray-200">
+            <h2 class="text-xl font-bold text-gray-900 mb-6 flex items-center gap-2">
+                <span class="p-2 bg-green-100 text-green-700 rounded-lg">📝</span> Step 2: Multiple Choice Practice
+            </h2>
+
+            <form id="quizForm" class="space-y-6"></form>
+
+            <div id="results" class="hidden mt-8 p-6 rounded-xl text-center border-2"></div>
+
+            <div class="mt-8 text-center">
+                <button type="button" id="submitBtn" onclick="gradeQuiz()" class="bg-blue-600 hover:bg-blue-700 text-white font-semibold px-8 py-3 rounded-xl transition shadow-md hover:shadow-lg cursor-pointer">
+                    Submit Answers
+                </button>
+            </div>
+        </section>
+    </div>
+
+    <script>
+        // Quiz Data Array
+        const quizData = [
+            {
+                q: "What is the primary purpose of the TOEFL iBT exam?",
+                options: [
+                    "To test conversational English used in daily travel",
+                    "To evaluate English proficiency in an academic, university-level environment",
+                    "To assess creative writing abilities in English literature",
+                    "To test knowledge of complex English medical and legal terminology"
+                ],
+                answer: 1
+            },
+            {
+                q: "When tackling the TOEFL Reading section, what is the most effective approach?",
+                options: [
+                    "Read the entire text slowly twice before looking at the questions",
+                    "Use outside knowledge from your own studies to answer the questions",
+                    "Skim the text for the main idea and scan for key terms mentioned in the questions",
+                    "Translate the text into your native language sentence by sentence"
+                ],
+                answer: 2
+            },
+            {
+                q: "In the Listening section, what should your note-taking primarily focus on?",
+                options: [
+                    "Writing down every single word spoken by the lecturer",
+                    "The spelling of complex scientific terms",
+                    "The main ideas, structure, and transitional signal words",
+                    "Guessing what the speaker looks like"
+                ],
+                answer: 2
+            },
+            {
+                q: "Why are transitional words like 'however' and 'on the other hand' important to note during the Listening section?",
+                options: [
+                    "They indicate that the speaker is about to change the topic entirely",
+                    "They signal an upcoming contrast or shift in perspective that will likely be tested",
+                    "They mean the lecturer is concluding the talk",
+                    "They are filler words that can be ignored"
+                ],
+                answer: 1
+            },
+            {
+                q: "What is a key strategy for success in the TOEFL Speaking section?",
+                options: [
+                    "Speaking as quickly as possible without pausing",
+                    "Using a structured template and clear transition words",
+                    "Using highly advanced vocabulary, even if used incorrectly",
+                    "Memorizing a single speech and repeating it for every question"
+                ],
+                answer: 1
+            },
+            {
+                q: "Graders in the Speaking section value which of the following most?",
+                options: [
+                    "A flawless, native-sounding accent",
+                    "Organization, clarity of thought, and coherent delivery",
+                    "Speaking for the entire time without making a single point",
+                    "Using poetic language"
+                ],
+                answer: 1
+            },
+            {
+                q: "In the Integrated Writing task, what is your primary objective?",
+                options: [
+                    "To write an essay defending your personal opinion on a controversial topic",
+                    "To summarize only the reading passage in great detail",
+                    "To synthesize and contrast the points of the reading passage with the lecture",
+                    "To critique the professor’s lecturing style"
+                ],
+                answer: 2
+            },
+            {
+                q: "For the Writing for an Academic Discussion task, what should a strong response include?",
+                options: [
+                    "A clear statement of your opinion supported by a specific reason or example",
+                    "A long, 500-word summary of what other students said",
+                    "An anonymous poll of your classmates' opinions",
+                    "A list of bullet points with no full sentences"
+                ],
+                answer: 0
+            },
+            {
+                q: "If you encounter an unfamiliar vocabulary word in the Reading section, what should you do?",
+                options: [
+                    "Give up on that question immediately",
+                    "Guess blindly without looking at the context",
+                    "Use context clues from the surrounding sentences to infer its meaning",
+                    "Complain to the test administrator"
+                ],
+                answer: 2
+            },
+            {
+                q: "Which of the following best describes the overall mindset needed to pass the TOEFL?",
+                options: [
+                    "It is a test of memorization, so memorize a dictionary",
+                    "It is a test of strategy and practical academic communication skills",
+                    "It is a test designed to trick you with obscure grammar rules",
+                    "It is an exam where time management does not matter"
+                ],
+                answer: 1
+            }
+        ];
+
+        // Generate the quiz dynamically
+        const form = document.getElementById('quizForm');
+        quizData.forEach((item, index) => {
+            const qDiv = document.createElement('div');
+            qDiv.className = "p-5 border border-gray-200 rounded-xl space-y-3 transition-colors duration-200 question-block";
+            qDiv.id = `qBlock-${index}`;
+
+            const label = document.createElement('h3');
+            label.className = "font-semibold text-gray-900";
+            label.innerText = `${index + 1}. ${item.q}`;
+            qDiv.appendChild(label);
+
+            item.options.forEach((opt, optIndex) => {
+                const optWrapper = document.createElement('label');
+                optWrapper.className = "flex items-start gap-3 p-2 rounded-lg hover:bg-gray-50 cursor-pointer text-sm text-gray-700";
+                
+                const radio = document.createElement('input');
+                radio.type = "radio";
+                radio.name = `question-${index}`;
+                radio.value = optIndex;
+                radio.className = "mt-1 h-4 w-4 text-blue-600 border-gray-300 focus:ring-blue-500";
+
+                const text = document.createElement('span');
+                text.innerText = opt;
+
+                optWrapper.appendChild(radio);
+                optWrapper.appendChild(text);
+                qDiv.appendChild(optWrapper);
+            });
+
+            form.appendChild(qDiv);
+        });
+
+        // Grading Logic
+        function gradeQuiz() {
+            let score = 0;
+            
+            quizData.forEach((item, index) => {
+                const selected = document.querySelector(`input[name="question-${index}"]:checked`);
+                const block = document.getElementById(`qBlock-${index}`);
+                
+                // Reset classes
+                block.classList.remove('correct', 'incorrect');
+
+                if (selected) {
+                    const answerIdx = parseInt(selected.value);
+                    if (answerIdx === item.answer) {
+                        score++;
+                        block.classList.add('correct');
+                    } else {
+                        block.classList.add('incorrect');
+                    }
+                } else {
+                    block.classList.add('incorrect'); // Treated as incorrect if left blank
+                }
+            });
+
+            // Display Results Summary
+            const resultsDiv = document.getElementById('results');
+            resultsDiv.classList.remove('hidden');
+            
+            if (score >= 7) {
+                resultsDiv.className = "mt-8 p-6 rounded-xl text-center border-2 border-green-500 bg-green-50 text-green-900";
+                resultsDiv.innerHTML = `<h3 class="text-xl font-bold">Great Job! 🎉</h3><p class="text-lg mt-1">You scored
