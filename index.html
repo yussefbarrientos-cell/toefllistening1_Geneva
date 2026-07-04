@@ -4,10 +4,10 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>TOEFL Practice Portal</title>
-    <script src="https://cdn.jsdelivr.net/npm/@tailwindcss/browser@4"></script>
+    <script src="https://cdn.tailwindcss.com"></script>
     <style>
-        .correct { border-color: #22c55e; background-color: #f0fdf4; }
-        .incorrect { border-color: #ef4444; background-color: #fef2f2; }
+        .correct { border-color: #22c55e !important; background-color: #f0fdf4 !important; }
+        .incorrect { border-color: #ef4444 !important; background-color: #fef2f2 !important; }
     </style>
 </head>
 <body class="bg-gray-50 font-sans text-gray-800 antialiased">
@@ -41,7 +41,7 @@
             <div id="results" class="hidden mt-8 p-6 rounded-xl text-center border-2"></div>
 
             <div class="mt-8 text-center">
-                <button type="button" id="submitBtn" onclick="gradeQuiz()" class="bg-blue-600 hover:bg-blue-700 text-white font-semibold px-8 py-3 rounded-xl transition shadow-md hover:shadow-lg cursor-pointer">
+                <button type="button" id="submitBtn" class="bg-blue-600 hover:bg-blue-700 text-white font-semibold px-8 py-3 rounded-xl transition shadow-md hover:shadow-lg cursor-pointer">
                     Submit Answers
                 </button>
             </div>
@@ -153,37 +153,45 @@
             }
         ];
 
-        // Generate the quiz dynamically
-        const form = document.getElementById('quizForm');
-        quizData.forEach((item, index) => {
-            const qDiv = document.createElement('div');
-            qDiv.className = "p-5 border border-gray-200 rounded-xl space-y-3 transition-colors duration-200 question-block";
-            qDiv.id = `qBlock-${index}`;
+        // Ensure DOM is fully ready before execution
+        window.addEventListener('DOMContentLoaded', () => {
+            const form = document.getElementById('quizForm');
+            const submitBtn = document.getElementById('submitBtn');
 
-            const label = document.createElement('h3');
-            label.className = "font-semibold text-gray-900";
-            label.innerText = `${index + 1}. ${item.q}`;
-            qDiv.appendChild(label);
+            // Generate the quiz dynamically
+            quizData.forEach((item, index) => {
+                const qDiv = document.createElement('div');
+                qDiv.className = "p-5 border border-gray-200 rounded-xl space-y-3 transition-colors duration-200";
+                qDiv.id = `qBlock-${index}`;
 
-            item.options.forEach((opt, optIndex) => {
-                const optWrapper = document.createElement('label');
-                optWrapper.className = "flex items-start gap-3 p-2 rounded-lg hover:bg-gray-50 cursor-pointer text-sm text-gray-700";
-                
-                const radio = document.createElement('input');
-                radio.type = "radio";
-                radio.name = `question-${index}`;
-                radio.value = optIndex;
-                radio.className = "mt-1 h-4 w-4 text-blue-600 border-gray-300 focus:ring-blue-500";
+                const label = document.createElement('h3');
+                label.className = "font-semibold text-gray-900";
+                label.innerText = `${index + 1}. ${item.q}`;
+                qDiv.appendChild(label);
 
-                const text = document.createElement('span');
-                text.innerText = opt;
+                item.options.forEach((opt, optIndex) => {
+                    const optWrapper = document.createElement('label');
+                    optWrapper.className = "flex items-start gap-3 p-2 rounded-lg hover:bg-gray-50 cursor-pointer text-sm text-gray-700";
+                    
+                    const radio = document.createElement('input');
+                    radio.type = "radio";
+                    radio.name = `question-${index}`;
+                    radio.value = optIndex;
+                    radio.className = "mt-1 h-4 w-4 text-blue-600 border-gray-300 focus:ring-blue-500";
 
-                optWrapper.appendChild(radio);
-                optWrapper.appendChild(text);
-                qDiv.appendChild(optWrapper);
+                    const text = document.createElement('span');
+                    text.innerText = opt;
+
+                    optWrapper.appendChild(radio);
+                    optWrapper.appendChild(text);
+                    qDiv.appendChild(optWrapper);
+                });
+
+                form.appendChild(qDiv);
             });
 
-            form.appendChild(qDiv);
+            // Attach click event handler to button safely
+            submitBtn.addEventListener('click', gradeQuiz);
         });
 
         // Grading Logic
@@ -194,7 +202,6 @@
                 const selected = document.querySelector(`input[name="question-${index}"]:checked`);
                 const block = document.getElementById(`qBlock-${index}`);
                 
-                // Reset classes
                 block.classList.remove('correct', 'incorrect');
 
                 if (selected) {
@@ -206,14 +213,23 @@
                         block.classList.add('incorrect');
                     }
                 } else {
-                    block.classList.add('incorrect'); // Treated as incorrect if left blank
+                    block.classList.add('incorrect'); 
                 }
             });
 
-            // Display Results Summary
             const resultsDiv = document.getElementById('results');
             resultsDiv.classList.remove('hidden');
             
             if (score >= 7) {
                 resultsDiv.className = "mt-8 p-6 rounded-xl text-center border-2 border-green-500 bg-green-50 text-green-900";
-                resultsDiv.innerHTML = `<h3 class="text-xl font-bold">Great Job! 🎉</h3><p class="text-lg mt-1">You scored
+                resultsDiv.innerHTML = `<h3 class="text-xl font-bold">Great Job! 🎉</h3><p class="text-lg mt-1">You scored <strong>${score} / 10</strong>. You are ready for the TOEFL structure!</p>`;
+            } else {
+                resultsDiv.className = "mt-8 p-6 rounded-xl text-center border-2 border-red-500 bg-red-50 text-red-900";
+                resultsDiv.innerHTML = `<h3 class="text-xl font-bold">Keep Practicing! 💪</h3><p class="text-lg mt-1">You scored <strong>${score} / 10</strong>. Review your mistakes and try again.</p>`;
+            }
+
+            window.scrollTo({ top: document.body.scrollHeight, behavior: 'smooth' });
+        }
+    </script>
+</body>
+</html>
